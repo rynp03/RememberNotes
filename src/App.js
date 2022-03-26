@@ -1,25 +1,77 @@
-import logo from './logo.svg';
-import './App.css';
+import NotesList from "./components/NotesList";
+import { nanoid } from "nanoid";
+import { useEffect, useState } from "react";
+import Search from "./components/Search";
+import Header from "./components/Header";
 
-function App() {
+const App = () => {
+  const [notes, setNotes] = useState([
+    {
+      id: nanoid(),
+      text: "hello",
+      date: "25/03/2022",
+    },
+  ]);
+
+  const [searchText, setSearchText] = useState("");
+  const [darkMode, setDarkMode] = useState(false);
+
+  useEffect(() => {
+    const savedNotes = JSON.parse(
+      localStorage.getItem('react-notes-app-data')
+    );
+
+    if(savedNotes){
+      setNotes(savedNotes);
+    }
+  }, []);
+
+
+  useEffect(() => {
+    localStorage.setItem(
+      'react-notes-app-data',
+      JSON.stringify(notes)
+    );
+  }, [notes]);
+
+  /* -------------------------------------------------------------------------- */
+  /*                             Updating New Notes                             */
+  /* -------------------------------------------------------------------------- */
+
+  const addNote = (text) => {
+    const date = new Date();
+    const newNote = {
+      id: nanoid(),
+      text: text,
+      date: date.toLocaleDateString(),
+    };
+
+    const updatedNotes = [...notes, newNote];
+    setNotes(updatedNotes);
+  };
+
+  /* -------------------------------------------------------------------------- */
+  /*                               Deleting Notes                               */
+  /* -------------------------------------------------------------------------- */
+
+  const deleteNote = (id) => {
+    const newNote = notes.filter((note) => note.id !== id);
+    setNotes(newNote);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className={`${darkMode && 'dark-mode'}`}>
+      <div className="container">
+        <Header handleToggleDarkMode={setDarkMode} />
+        <Search handleSearchNote={setSearchText} />
+        <NotesList
+          notes={notes.filter((note) => note.text.includes(searchText))}
+          handleAddNote={addNote}
+          handleDeleteNote={deleteNote}
+        />
+      </div>
     </div>
   );
-}
+};
 
 export default App;
