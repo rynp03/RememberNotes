@@ -38,6 +38,10 @@ code {
 /*                                    Notes                                   */
 /* -------------------------------------------------------------------------- */
 
+.note-text{
+  word-break: break-all;
+}
+
 .notes-list {
   display: grid;
   gap: 1rem;
